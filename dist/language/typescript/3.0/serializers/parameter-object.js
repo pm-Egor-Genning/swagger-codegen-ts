@@ -47,7 +47,7 @@ exports.serializeQueryParameterToTemplate = (from, parameter, parameterSchema, s
     }
     const pathToUtils = ref_1.getRelativePath(from, openapi_3_utils_1.openapi3utilsRef.right);
     const required = exports.isRequired(parameter);
-    const encoded = serialized_fragment_1.serializedFragment(`${serializedSchema.io}.encode(${target}['${parameter.name}' || none])`, [...serializedSchema.dependencies, serialized_dependency_1.serializedDependency('none', 'fp-ts/lib/Option')], serializedSchema.refs);
+    const encoded = serialized_fragment_1.serializedFragment(`${serializedSchema.io}.encode(${target}['${parameter.name}'] || none)`, [...serializedSchema.dependencies, serialized_dependency_1.serializedDependency('none', 'fp-ts/lib/Option')], serializedSchema.refs);
     return pipeable_1.pipe(getFn(pathToUtils, parameterSchema, parameter), fp_ts_1.either.map(fn => serialized_fragment_1.getSerializedOptionCallFragment(!required, fn, encoded)));
 };
 const getFn = (pathToUtils, schema, parameter) => {
