@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const document_1 = require("./serializers/document");
+const prettier_1 = require("prettier");
+const fs_1 = require("../../../utils/fs");
+const pipeable_1 = require("fp-ts/lib/pipeable");
+const reader_utils_1 = require("@devexperts/utils/dist/adt/reader.utils");
+const fp_ts_1 = require("fp-ts");
+const either_utils_1 = require("@devexperts/utils/dist/adt/either.utils");
+const utils_1 = require("../common/utils");
+var document_2 = require("./serializers/document");
+exports.serializeDocument = document_2.serializeDocument;
+exports.serialize = reader_utils_1.combineReader(document_1.serializeDocument, serializeDocument => (documents, options = {}) => pipeable_1.pipe(documents, fp_ts_1.record.collect(serializeDocument), either_utils_1.sequenceEither, fp_ts_1.either.map(e => fs_1.map(fs_1.fragment(e), content => prettier_1.format(content, options.prettierConfig || utils_1.defaultPrettierConfig)))));
