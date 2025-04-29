@@ -308,7 +308,10 @@ export const serializeOperationObject = combineReader(
 				);
 				const bodyIO = pipe(
 					parameters.serializedBodyParameter,
-					option.map(body => `const body = ${body.io}.encode(parameters.body);`),
+					option.map(
+						body =>
+							`function withExplicitNulls(codec , input) {const newObj = { ...input };const props = codec.props;for (const key in props) {if (!(key in newObj)) {newObj[key] = none;}} return newObj;};const valueWithNulls = withExplicitNulls(${body.io}, parameters.body);const body = ${body.io}.encode(valueWithNulls);`,
+					),
 					option.getOrElse(() => ''),
 				);
 

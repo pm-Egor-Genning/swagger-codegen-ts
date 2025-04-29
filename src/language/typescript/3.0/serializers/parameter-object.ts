@@ -99,8 +99,8 @@ export const serializeQueryParameterToTemplate = (
 	const required = isRequired(parameter);
 
 	const encoded = serializedFragment(
-		`${serializedSchema.io}.encode(${target}['${parameter.name}'])`,
-		serializedSchema.dependencies,
+		`${serializedSchema.io}.encode(${target}['${parameter.name}' || none])`,
+		[...serializedSchema.dependencies, serializedDependency('none', 'fp-ts/lib/Option')],
 		serializedSchema.refs,
 	);
 
