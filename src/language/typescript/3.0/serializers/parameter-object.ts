@@ -1,26 +1,26 @@
-import { fromSerializedType, SerializedParameter } from '../../common/data/serialized-parameter';
-import { Either, isLeft, left, right } from 'fp-ts/lib/Either';
-import { serializeSchemaObject } from './schema-object';
-import { pipe } from 'fp-ts/lib/pipeable';
-import { either, option, record } from 'fp-ts';
-import { getSerializedRefType, SerializedType } from '../../common/data/serialized-type';
-import { fromString, getRelativePath, Ref } from '../../../../utils/ref';
-import { ParameterObject, ParameterObjectStyle } from '../../../../schema/3.0/parameter-object';
-import { ReferenceObject, ReferenceObjectCodec } from '../../../../schema/3.0/reference-object';
-import { constFalse } from 'fp-ts/lib/function';
+import {fromSerializedType, SerializedParameter} from '../../common/data/serialized-parameter';
+import {Either, isLeft, left, right} from 'fp-ts/lib/Either';
+import {serializeSchemaObject} from './schema-object';
+import {pipe} from 'fp-ts/lib/pipeable';
+import {either, option, record} from 'fp-ts';
+import {getSerializedRefType, SerializedType} from '../../common/data/serialized-type';
+import {fromString, getRelativePath, Ref} from '../../../../utils/ref';
+import {ParameterObject, ParameterObjectStyle} from '../../../../schema/3.0/parameter-object';
+import {ReferenceObject, ReferenceObjectCodec} from '../../../../schema/3.0/reference-object';
+import {constFalse} from 'fp-ts/lib/function';
 import {
-	PrimitiveSchemaObjectCodec,
-	SchemaObject,
 	ArraySchemaObjectCodec,
 	ObjectSchemaObjectCodec,
+	PrimitiveSchemaObjectCodec,
+	SchemaObject,
 } from '../../../../schema/3.0/schema-object';
 import {
-	serializedFragment,
-	SerializedFragment,
 	getSerializedOptionCallFragment,
+	SerializedFragment,
+	serializedFragment,
 } from '../../common/data/serialized-fragment';
-import { serializedDependency } from '../../common/data/serialized-dependency';
-import { openapi3utilsRef } from '../bundled/openapi-3-utils';
+import {serializedDependency} from '../../common/data/serialized-dependency';
+import {openapi3utilsRef} from '../bundled/openapi-3-utils';
 
 const forParameter = (parameter: ParameterObject): string => `for parameter "${parameter.name}" in "${parameter.in}"`;
 
@@ -98,11 +98,16 @@ export const serializeQueryParameterToTemplate = (
 	const pathToUtils = getRelativePath(from, openapi3utilsRef.right);
 	const required = isRequired(parameter);
 
-	const encoded = serializedFragment(
-		`${serializedSchema.io}.encode(${target}['${parameter.name}'] || none)`,
-		[...serializedSchema.dependencies, serializedDependency('none', 'fp-ts/lib/Option')],
-		serializedSchema.refs,
-	);
+	const encoded = required ? serializedFragment(
+			`${serializedSchema.io}.encode(${target}['${parameter.name}'])`,
+			serializedSchema.dependencies,
+			serializedSchema.refs,
+		) :
+		serializedFragment(
+			`${serializedSchema.io}.encode(${target}['${parameter.name}'] || none)`,
+			[...serializedSchema.dependencies, serializedDependency('none', 'fp-ts/lib/Option')],
+			serializedSchema.refs,
+		);
 
 	return pipe(
 		getFn(pathToUtils, parameterSchema, parameter),
