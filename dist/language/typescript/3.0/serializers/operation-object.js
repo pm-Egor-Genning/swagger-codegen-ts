@@ -147,7 +147,7 @@ exports.serializeOperationObject = reader_utils_1.combineReader(Reader_1.ask(), 
         const hasHeaderParameters = Option_1.isSome(parameters.serializedHeadersParameter);
         const hasParameters = hasQueryParameters || hasBodyParameter || hasHeaderParameters;
         const bodyType = pipeable_1.pipe(parameters.serializedBodyParameter, fp_ts_1.option.map(body => `body: ${body.type},`), fp_ts_1.option.getOrElse(() => ''));
-        const bodyIO = pipeable_1.pipe(parameters.serializedBodyParameter, fp_ts_1.option.map(body => `function withExplicitNulls(codec , input) {const newObj = { ...input };const props = codec.props;for (const key in props) {if (!(key in newObj)) {newObj[key] = none;}} return newObj;};const valueWithNulls = withExplicitNulls(${body.io}, parameters.body);const body = ${body.io}.encode(valueWithNulls);`), fp_ts_1.option.getOrElse(() => ''));
+        const bodyIO = pipeable_1.pipe(parameters.serializedBodyParameter, fp_ts_1.option.map(body => `function withExplicitNulls(codec , input) { if (input && typeof input !== 'object') { return input; } const newObj = { ...input };const props = codec.props;for (const key in props) {if (!(key in newObj)) {newObj[key] = none;}} return newObj;};const valueWithNulls = withExplicitNulls(${body.io}, parameters.body);const body = ${body.io}.encode(valueWithNulls);`), fp_ts_1.option.getOrElse(() => ''));
         const queryType = pipeable_1.pipe(parameters.serializedQueryParameter, fp_ts_1.option.map(query => `query: ${query.type};`), fp_ts_1.option.getOrElse(() => ''));
         const queryIO = pipeable_1.pipe(parameters.serializedQueryString, fp_ts_1.option.map(query => `const query = ${query.value};`), fp_ts_1.option.getOrElse(() => ''));
         const headersType = pipeable_1.pipe(parameters.serializedHeadersParameter, fp_ts_1.option.map(headers => `headers: ${headers.type};`), fp_ts_1.option.getOrElse(() => ''));
@@ -209,6 +209,7 @@ exports.serializeOperationObject = reader_utils_1.combineReader(Reader_1.ask(), 
             serialized_dependency_1.serializedDependency('getResponseTypeFromMediaType', '../utils/utils'),
             serialized_dependency_1.serializedDependency('ResponseValidationError', ref_1.getRelativePath(from, clientRef)),
             serialized_dependency_1.serializedDependency('pipe', 'fp-ts/lib/pipeable'),
+            serialized_dependency_1.serializedDependency('none', 'fp-ts/lib/Option'),
             serialized_dependency_1.serializedDependency('either', 'fp-ts'),
             serialized_dependency_1.getSerializedKindDependency(kind),
             ...pipeable_1.pipe(serializedResponses, fp_ts_1.either.fold(s => s.schema.dependencies, function_1.flow(fp_ts_1.array.map(s => s.schema.dependencies), fp_ts_1.array.flatten, arr => [
