@@ -310,7 +310,7 @@ export const serializeOperationObject = combineReader(
 					parameters.serializedBodyParameter,
 					option.map(
 						body =>
-							`function withExplicitNulls(codec , input) {const newObj = { ...input };const props = codec.props;for (const key in props) {if (!(key in newObj)) {newObj[key] = none;}} return newObj;};const valueWithNulls = withExplicitNulls(${body.io}, parameters.body);const body = ${body.io}.encode(valueWithNulls);`,
+							`function withExplicitNulls(codec , input) { if (input && typeof input !== 'object') { return input; } const newObj = { ...input };const props = codec.props;for (const key in props) {if (!(key in newObj)) {newObj[key] = none;}} return newObj;};const valueWithNulls = withExplicitNulls(${body.io}, parameters.body);const body = ${body.io}.encode(valueWithNulls);`,
 					),
 					option.getOrElse(() => ''),
 				);
@@ -459,6 +459,7 @@ export const serializeOperationObject = combineReader(
 					serializedDependency('getResponseTypeFromMediaType', '../utils/utils'),
 					serializedDependency('ResponseValidationError', getRelativePath(from, clientRef)),
 					serializedDependency('pipe', 'fp-ts/lib/pipeable'),
+					serializedDependency('none', 'fp-ts/lib/Option'),
 					serializedDependency('either', 'fp-ts'),
 					getSerializedKindDependency(kind),
 					...pipe(
